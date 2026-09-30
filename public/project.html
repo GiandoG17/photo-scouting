@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Foto Recap</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="icon" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#E3E0D5">
+</head>
+<body>
+  <header class="top"><a href="/" class="brand"><img src="/logo.png" alt="Squalo Produzioni"></a><a href="/">Tutti i progetti</a></header>
+  <h1 id="title" class="project-title">...</h1>
+
+  <details class="card" id="metaBox">
+    <summary><strong>Dati del PDF</strong> <small>(copertina, footer, contatti)</small></summary>
+    <div class="grid-form" style="margin-top:12px">
+      <label>Nome progetto<input data-meta="name"></label>
+      <label>Cliente<input data-meta="client"></label>
+      <label>Casa di produzione<input data-meta="company"></label>
+      <label>Data nel footer<input data-meta="dateLabel" placeholder="SEPTEMBER 2025"></label>
+      <label>Email<input data-meta="email"></label>
+      <label>Telefono<input data-meta="phone"></label>
+      <label style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" data-meta="includeGrid" style="width:auto"> Galleria con tutte le foto di ogni location</label>
+      <div>
+        <label>Logo copertina (PNG/JPG)</label>
+        <div class="row" style="margin-top:4px">
+          <img id="logoPreview" alt="" style="max-height:36px" hidden>
+          <input type="file" id="logoInput" accept="image/png,image/jpeg" hidden>
+          <button class="small" id="logoBtn">Carica logo</button>
+          <button class="small danger" id="logoDel" hidden>Rimuovi</button>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <h2>1. Carica le foto</h2>
+  <div class="dropzone" id="drop">
+    <div class="row" style="justify-content:center;margin-bottom:10px">
+      <button class="primary" id="pickFiles">Seleziona foto</button>
+      <button id="pickFolder">Seleziona cartella</button>
+    </div>
+    <small>Oppure trascina qui foto o cartelle. Nelle cartelle vengono cercate le foto anche nelle sottocartelle.<br>
+      Le foto vengono divise in location in base a posizione GPS e orario di scatto.</small>
+    <input type="file" id="fileInput" accept="image/*,.heic,.heif" multiple hidden>
+    <input type="file" id="folderInput" webkitdirectory directory multiple hidden>
+    <div class="progress" id="progress"><div></div></div>
+    <small id="progressText"></small>
+  </div>
+
+  <div class="row" style="margin-top:22px">
+    <h2 style="margin:0">2. Controlla le location</h2>
+    <span class="spacer"></span>
+    <button class="small" id="recluster" title="Rifà i gruppi da zero">Riraggruppa tutto</button>
+  </div>
+  <p class="muted">Trascina le foto da una location all'altra (sul telefono tieni premuto e poi trascina; se ne hai selezionate più di una si spostano tutte). Tocca le foto per selezionarle, sceglierne la copertina o eliminarle. Il salvataggio è automatico.</p>
+  <div id="locations"></div>
+
+  <h2>3. Genera il recap</h2>
+  <div class="card">
+    <div class="row">
+      <button class="primary" id="generate">Genera PDF e zip</button>
+      <small id="genStatus"></small>
+    </div>
+    <div class="output" id="output"></div>
+  </div>
+
+  <h2>Elimina</h2>
+  <div class="card">
+    <div class="row">
+      <button class="danger" id="deleteAllPhotos">Elimina tutte le foto</button>
+      <button class="danger" id="deleteProject">Elimina progetto</button>
+    </div>
+    <p class="muted" style="margin-bottom:0">Le foto vengono cancellate dal server insieme a zip e PDF generati. I file che hai già caricato su Drive o WeTransfer non vengono toccati.</p>
+  </div>
+
+  <div class="actionbar" id="actionbar">
+    <span id="selCount"></span>
+    <select id="moveTarget"></select>
+    <button id="moveBtn">Sposta</button>
+    <button id="coverBtn">Copertina</button>
+    <button id="deleteBtn">Elimina</button>
+    <button id="clearSel">Annulla</button>
+  </div>
+
+  <script src="/dialog.js"></script>
+  <script src="/project.js"></script>
+</body>
+</html>

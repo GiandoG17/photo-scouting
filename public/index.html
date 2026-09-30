@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Foto Recap</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="icon" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#E3E0D5">
+</head>
+<body>
+  <header class="top"><a href="/" class="brand"><img src="/logo.png" alt="Squalo Produzioni"></a><span class="row"><small>location proposals</small><button class="link-btn" id="logout" hidden>Esci</button></span></header>
+
+  <h2>Nuovo sopralluogo</h2>
+  <form id="create" class="card grid-form" novalidate>
+    <label>Nome progetto<input name="name" placeholder="HEM2501 Location Proposals"></label>
+    <label>Cliente<input name="client" placeholder="H&M"></label>
+    <label>Casa di produzione<input name="company" data-default></label>
+    <label>Email contatto<input name="email" type="email" data-default></label>
+    <label>Telefono<input name="phone" type="tel" data-default></label>
+    <div style="align-self:end"><button class="primary" type="submit">Crea e carica foto</button></div>
+  </form>
+
+  <h2>Progetti</h2>
+  <div id="list" class="projects"><small>Caricamento...</small></div>
+
+<script src="/dialog.js"></script>
+<script>
+const form = document.getElementById('create');
+apiFetch('/api/defaults').then((d) => {
+  document.getElementById('logout').hidden = !d.auth;
+  form.querySelectorAll('[data-default]').forEach((el) => { if (!el.value) el.value = d[el.name] || ''; });
+});
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const body = Object.fromEntries(new FormData(form));
+  // Controlli con popup dell'app al posto dei fumetti di validazione del browser.
+  if (!body.name.trim()) {
+    await appAlert({ title: 'Manca il nome del progetto', message: 'Scrivi un nome, per esempio "HEM2501 Location Proposals".' });
+    form.elements.name.focus();
+    return;
+  }
+  if (body.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
+    await appAlert({ title: 'Email non valida', message: `"${body.email}" non sembra un indirizzo email.` });
+    form.elements.email.focus();
+    return;
+  }
+  const p = await apiFetch('/api/projects', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  location.href = '/project.html?id=' + p.id;
+});
+
+document.getElementById('logout').onclick = async () => {
+  if (!(await appConfirm({ title: 'Uscire?', message: 'Per rientrare servirà di nuovo la password.', confirmText: 'Esci' }))) return;
+  await apiFetch('/api/logout', { method: 'POST' });
+  location.href = '/login.html';
+};
+
+(async () => {
+  const list = document.getElementById('list');
+  const projects = await apiFetch('/api/projects');
+  list.innerHTML = projects.length ? '' : '<small>Nessun progetto ancora.</small>';
+  for (const p of projects) {
+    const a = document.createElement('a');
+    a.className = 'card';
+    a.href = '/project.html?id=' + p.id;
+    a.innerHTML = `<span><strong></strong><br><small></small></span><small>${new Date(p.createdAt).toLocaleDateString('it-IT')}</small>`;
+    a.querySelector('strong').textContent = p.name;
+    a.querySelector('span small').textContent = `${p.client ? p.client + ' · ' : ''}${p.locations} location · ${p.photos} foto`;
+    list.appendChild(a);
+  }
+})();
+</script>
+</body>
+</html>

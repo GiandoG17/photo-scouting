@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Accesso · Foto Recap</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="icon" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#E3E0D5">
+</head>
+<body>
+  <main class="login">
+    <img src="/logo.png" alt="Squalo Produzioni">
+    <form id="login" class="card" novalidate>
+      <label>Password<input name="password" type="password" autocomplete="current-password" autofocus></label>
+      <button class="primary" type="submit">Entra</button>
+    </form>
+  </main>
+
+<script src="/dialog.js"></script>
+<script>
+const form = document.getElementById('login');
+const next = new URLSearchParams(location.search).get('next') || '/';
+// Solo percorsi interni all'app.
+const target = next.startsWith('/') && !next.startsWith('//') ? next : '/';
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const password = form.elements.password.value;
+  if (!password) {
+    await appAlert({ title: 'Manca la password', message: 'Scrivi la password per entrare.' });
+    form.elements.password.focus();
+    return;
+  }
+  const btn = form.querySelector('button');
+  btn.disabled = true;
+  try {
+    await apiFetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password }) });
+    location.href = target;
+  } catch (err) {
+    await appAlert({ title: 'Accesso non riuscito', message: err.message });
+    form.elements.password.select();
+  } finally {
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

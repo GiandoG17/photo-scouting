@@ -1,0 +1,24 @@
+{
+  "name": "foto-recap",
+  "version": "1.0.0",
+  "description": "Carica le foto dei sopralluoghi, le divide per location e genera il PDF di recap con mappa e link di download",
+  "main": "server.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "type": "commonjs",
+  "dependencies": {
+    "archiver": "^8.0.0",
+    "exifr": "^7.1.3",
+    "express": "^4.22.3",
+    "heic-convert": "^2.1.0",
+    "multer": "^2.4.0",
+    "pdfkit": "^0.20.2",
+    "sharp": "^0.35.5"
+  },
+  "private": true
+}
